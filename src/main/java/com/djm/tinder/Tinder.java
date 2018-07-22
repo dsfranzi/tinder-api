@@ -14,6 +14,7 @@ import com.djm.tinder.match.MatchResponse;
 import com.djm.tinder.profile.Profile;
 import com.djm.tinder.profile.ProfileRequest;
 import com.djm.tinder.profile.ProfileResponse;
+import com.djm.tinder.profile.UpdateProfileRequest;
 import com.djm.tinder.user.User;
 import com.djm.tinder.recommendation.RecommendationRequest;
 import com.djm.tinder.recommendation.RecommendationResponse;
@@ -34,6 +35,11 @@ public class Tinder {
     public static final String BASE_URL = "https://api.gotinder.com";
 
     /**
+     * Facebook access token to retrieve Tinder API token
+     */
+    private String facebookAccessToken;
+
+    /**
      * Non authenticated http client.
      */
     private AnonymousHttpClient anonymousHttpClient;
@@ -44,12 +50,12 @@ public class Tinder {
     private AuthenticatedHttpClient authenticatedHttpClient;
 
     private Tinder(String facebookAccessToken) throws Exception {
-        anonymousHttpClient = new AnonymousHttpClient(new OkHttpClient());
-        authenticatedHttpClient = new AuthenticatedHttpClient(anonymousHttpClient, getAccessToken(facebookAccessToken));
+        this.facebookAccessToken = facebookAccessToken;
     }
 
     /**
      * Build the Tinder client given the access token.
+     *
      * @param facebookAccessToken
      * @return Tinder
      * @throws Exception
@@ -60,12 +66,13 @@ public class Tinder {
 
     /**
      * Returns a list of recommendations.
+     *
      * @return recommendations
      * @throws Exception
      */
     public ArrayList<User> getRecommendations() throws Exception {
         RecommendationResponse recommendationResponse = new RecommendationResponse(
-                authenticatedHttpClient.get(
+                getAuthenticatedHttpClient().get(
                         new RecommendationRequest(BASE_URL + RecommendationRequest.URI)
                 )
         );
@@ -78,23 +85,28 @@ public class Tinder {
      * @return Profile
      */
     public Profile getProfile() throws Exception {
-        ProfileResponse profileResponse = new ProfileResponse(authenticatedHttpClient.get(new ProfileRequest(BASE_URL + ProfileRequest.URI)));
+        ProfileResponse profileResponse = new ProfileResponse(getAuthenticatedHttpClient().get(new ProfileRequest(BASE_URL + ProfileRequest.URI)));
         return profileResponse.getProfile();
+    }
+
+    public void setProfile() throws Exception {
+        getAuthenticatedHttpClient().get(new UpdateProfileRequest(BASE_URL + UpdateProfileRequest.URI))
     }
 
     /**
      * Likes a given user and returns a Like object
+     *
      * @param user
      * @return Like
      */
     public Like like(User user) throws Exception {
         LikeResponse likeResponse = new LikeResponse(
-                authenticatedHttpClient.get(
+                getAuthenticatedHttpClient().get(
                         new LikeRequest(
-                            BASE_URL + LikeRequest.URI,
-                            user.getId(),
-                            user.getContentHash(),
-                            user.getsNumber()
+                                BASE_URL + LikeRequest.URI,
+                                user.getId(),
+                                user.getContentHash(),
+                                user.getsNumber()
                         )
                 )
         );
@@ -103,25 +115,41 @@ public class Tinder {
 
     /**
      * Return my tinder matches available until now as an array list
+     *
      * @return my tinder matches
      * @throws Exception
      */
     public ArrayList<Match> getMatches() throws Exception {
         MatchResponse matchResponse = new MatchResponse(
-                authenticatedHttpClient.post(new MatchRequest(BASE_URL + MatchRequest.URI))
+                getAuthenticatedHttpClient().post(new MatchRequest(BASE_URL + MatchRequest.URI))
         );
         return matchResponse.getMatches();
     }
 
     /**
      * Retrieve the tinder access token in order to query the tinder api, given the facebook access token.
+     *
      * @param facebookAccessToken
      * @return accessToken
      * @throws Exception
      */
     private String getAccessToken(String facebookAccessToken) throws Exception {
         HttpPostRequest request = new AuthRequest(BASE_URL + AuthRequest.URI, facebookAccessToken);
-        AuthResponse authResponse = new AuthResponse(anonymousHttpClient.post(request));
+        AuthResponse authResponse = new AuthResponse(getAnonymousHttpClient().post(request));
         return authResponse.getToken();
+    }
+
+    private AnonymousHttpClient getAnonymousHttpClient() {
+        if (anonymousHttpClient == null) {
+            anonymousHttpClient = new AnonymousHttpClient(new OkHttpClient());
+        }
+        return anonymousHttpClient;
+    }
+
+    private AuthenticatedHttpClient getAuthenticatedHttpClient() throws Exception {
+        if (authenticatedHttpClient == null) {
+            authenticatedHttpClient = new AuthenticatedHttpClient(getAnonymousHttpClient(), getAccessToken(facebookAccessToken));
+        }
+        return authenticatedHttpClient;
     }
 }
