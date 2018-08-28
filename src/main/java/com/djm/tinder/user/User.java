@@ -14,6 +14,7 @@ public class User {
     private Date birthDate;
     private String name;
     private String contentHash;
+    private String bio;
     private String sNumber;
     private ArrayList<Photo> photos;
 
@@ -108,6 +109,15 @@ public class User {
      */
     public User setContentHash(String contentHash) {
         this.contentHash = contentHash;
+        return this;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public User setBio(String bio) {
+        this.bio = bio;
         return this;
     }
 

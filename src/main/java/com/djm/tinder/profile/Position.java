@@ -1,5 +1,7 @@
 package com.djm.tinder.profile;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Date;
 
 /**
@@ -11,16 +13,19 @@ public class Position {
     /**
      * Position's Latitude
      */
+    @JsonProperty("lat")
     private double lat;
 
     /**
      * Position's longitude
      */
+    @JsonProperty("lon")
     private double lon;
 
     /**
      * Last time this position has been registered
      */
+    @JsonProperty("at")
     private Date lastRecordedAt;
 
     /**

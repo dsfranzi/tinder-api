@@ -1,5 +1,8 @@
 package com.djm.tinder.profile;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -9,24 +12,61 @@ import java.util.Date;
  */
 public class Profile {
 
+    @JsonProperty(value = "_id", access = JsonProperty.Access.READ_ONLY)
     private String id;
+
+    @JsonProperty(value = "age_filter_max")
     private int ageFilterMax;
+
+    @JsonProperty(value = "age_filter_min")
     private int ageFilterMin;
+
+    @JsonProperty(value = "bio", access = JsonProperty.Access.READ_ONLY)
     private String bio;
+
+    @JsonProperty(value = "birth_date", access = JsonProperty.Access.READ_ONLY)
     private Date birthDate;
+
+    @JsonProperty(value = "blend", access = JsonProperty.Access.READ_ONLY)
     private String blend;
+
+    @JsonProperty(value = "can_create_squad", access = JsonProperty.Access.READ_ONLY)
     private boolean canCreateSquad;
+
+    @JsonIgnore
     private int ConnectionCount;
+
+    @JsonProperty(value = "create_date", access = JsonProperty.Access.READ_ONLY)
     private Date createDate;
+
+    @JsonProperty(value = "discoverable_party", access = JsonProperty.Access.READ_ONLY)
     private boolean discoverable;
+
+    @JsonProperty(value = "distance_filter")
     private int distanceFilter;
+
+    @JsonProperty(value = "facebook_id", access = JsonProperty.Access.READ_ONLY)
     private String facebookId;
+
+    @JsonProperty(value = "gender")
     private int gender;
+
+    @JsonProperty(value = "gender_filter")
     private int genderFilter;
+
+    @JsonProperty(value = "name", access = JsonProperty.Access.READ_ONLY)
     private String name;
+
+    @JsonProperty(value = "username", access = JsonProperty.Access.READ_ONLY)
     private String username;
+
+    @JsonProperty(value = "pos", access = JsonProperty.Access.READ_ONLY)
     private Position position;
+
+    @JsonProperty(value = "photo_optimizer_enabled", access = JsonProperty.Access.READ_ONLY)
     private boolean photoOptimizerEnabled;
+
+    @JsonProperty(value = "photos", access = JsonProperty.Access.READ_ONLY)
     private ArrayList<Photo> photos;
 
     public String getId() {

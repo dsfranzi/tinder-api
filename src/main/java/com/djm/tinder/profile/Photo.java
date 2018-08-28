@@ -1,5 +1,7 @@
 package com.djm.tinder.profile;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 
 /**
@@ -7,9 +9,13 @@ import java.util.ArrayList;
  * @since 05-2017
  */
 public class Photo {
+    @JsonProperty("fileName")
     private String fileName;
+    @JsonProperty("id")
     private String id;
+    @JsonProperty("fbId")
     private String fbId;
+    @JsonProperty("extension")
     private String extension;
     private ArrayList<ProcessedPhoto> processedPhotos;
     private double selectRate;

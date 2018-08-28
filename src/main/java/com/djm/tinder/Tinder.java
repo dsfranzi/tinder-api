@@ -11,16 +11,16 @@ import com.djm.tinder.like.LikeResponse;
 import com.djm.tinder.match.Match;
 import com.djm.tinder.match.MatchRequest;
 import com.djm.tinder.match.MatchResponse;
-import com.djm.tinder.profile.Profile;
-import com.djm.tinder.profile.ProfileRequest;
-import com.djm.tinder.profile.ProfileResponse;
-import com.djm.tinder.profile.UpdateProfileRequest;
+import com.djm.tinder.profile.*;
 import com.djm.tinder.user.User;
 import com.djm.tinder.recommendation.RecommendationRequest;
 import com.djm.tinder.recommendation.RecommendationResponse;
 
 import okhttp3.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 /**
@@ -35,33 +35,33 @@ public class Tinder {
     public static final String BASE_URL = "https://api.gotinder.com";
 
     /**
-     * Facebook access token to retrieve Tinder API token
+     * Tinder API token
      */
-    private String facebookAccessToken;
+    private String tinderApiToken;
 
     /**
      * Non authenticated http client.
      */
-    private AnonymousHttpClient anonymousHttpClient;
+    private static AnonymousHttpClient anonymousHttpClient;
 
     /**
      * Authenticated http client. Can performs http request to the private tinder api endpoints.
      */
     private AuthenticatedHttpClient authenticatedHttpClient;
 
-    private Tinder(String facebookAccessToken) throws Exception {
-        this.facebookAccessToken = facebookAccessToken;
+    private Tinder(String tinderApiToken) {
+        this.tinderApiToken = tinderApiToken;
     }
 
     /**
      * Build the Tinder client given the access token.
      *
-     * @param facebookAccessToken
+     * @param tinderApiToken
      * @return Tinder
      * @throws Exception
      */
-    public static Tinder fromAccessToken(String facebookAccessToken) throws Exception {
-        return new Tinder(facebookAccessToken);
+    public static Tinder fromAccessToken(String tinderApiToken) {
+        return new Tinder(tinderApiToken);
     }
 
     /**
@@ -89,8 +89,12 @@ public class Tinder {
         return profileResponse.getProfile();
     }
 
-    public void setProfile() throws Exception {
-        getAuthenticatedHttpClient().get(new UpdateProfileRequest(BASE_URL + UpdateProfileRequest.URI))
+    public void setProfile(ProfileUpdate profile) throws Exception {
+        getAuthenticatedHttpClient().post(new UpdateProfileRequest(BASE_URL + UpdateProfileRequest.URI, profile));
+    }
+
+    public void setPosition(PositionUpdate position) throws Exception {
+        getAuthenticatedHttpClient().post(new UpdatePositionRequest(BASE_URL + UpdatePositionRequest.URI, position));
     }
 
     /**
@@ -133,13 +137,13 @@ public class Tinder {
      * @return accessToken
      * @throws Exception
      */
-    private String getAccessToken(String facebookAccessToken) throws Exception {
+    public static String getAccessToken(String facebookAccessToken) throws Exception {
         HttpPostRequest request = new AuthRequest(BASE_URL + AuthRequest.URI, facebookAccessToken);
         AuthResponse authResponse = new AuthResponse(getAnonymousHttpClient().post(request));
         return authResponse.getToken();
     }
 
-    private AnonymousHttpClient getAnonymousHttpClient() {
+    private static AnonymousHttpClient getAnonymousHttpClient() {
         if (anonymousHttpClient == null) {
             anonymousHttpClient = new AnonymousHttpClient(new OkHttpClient());
         }
@@ -148,7 +152,7 @@ public class Tinder {
 
     private AuthenticatedHttpClient getAuthenticatedHttpClient() throws Exception {
         if (authenticatedHttpClient == null) {
-            authenticatedHttpClient = new AuthenticatedHttpClient(getAnonymousHttpClient(), getAccessToken(facebookAccessToken));
+            authenticatedHttpClient = new AuthenticatedHttpClient(getAnonymousHttpClient(), tinderApiToken);
         }
         return authenticatedHttpClient;
     }

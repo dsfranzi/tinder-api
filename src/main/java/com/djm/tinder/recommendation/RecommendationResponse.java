@@ -66,6 +66,7 @@ public class RecommendationResponse {
                     .setDistance((Long) item.get("distance_mi"))
                     .setName((String) item.get("name"))
                     .setContentHash((String) item.get("content_hash"))
+                    .setBio((String) item.get("bio"))
                     .setPhotos(photos)
                     .setGender(Math.toIntExact((Long) item.get("gender")));
             users.add(recommendedUser);

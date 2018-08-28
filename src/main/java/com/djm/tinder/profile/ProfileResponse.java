@@ -71,7 +71,7 @@ public class ProfileResponse {
                 .setCreateDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse((String) jsonResponse.get("create_date")))
                 .setBlend((String) jsonResponse.get("blend"))
                 .setCanCreateSquad((Boolean) jsonResponse.get("can_create_squad"))
-                .setDiscoverable((Boolean) jsonResponse.get("discoverable"))
+                //.setDiscoverable((Boolean) jsonResponse.get("discoverable"))
                 .setDistanceFilter(Math.toIntExact((Long) jsonResponse.get("distance_filter")))
                 .setFacebookId((String) jsonResponse.get("facebook_id"))
                 .setPhotoOptimizerEnabled((Boolean) jsonResponse.get("photo_optimizer_enabled"))
